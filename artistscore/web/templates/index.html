@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Artists</h1>
+{% include "_search_form.html" %}
+{% if rows %}
+<form action="/compare" method="get">
+<table class="data">
+  <thead><tr><th class="check"><span class="sr">Compare</span></th><th>Artist</th><th class="num">Score</th><th>Tier</th>
+    <th class="num">Coverage</th><th>Last refreshed</th></tr></thead>
+  <tbody>
+  {% for r in rows %}
+    <tr>
+      <td class="check"><input type="checkbox" name="ids" value="{{ r.artist.id }}" aria-label="Compare {{ r.artist.name }}"></td>
+      <td><a href="/artist/{{ r.artist.id }}">{{ r.artist.name }}</a>
+        {% if jobs.get(r.artist.id) == 'running' %}<span class="pill">refreshing…</span>{% endif %}</td>
+      <td class="num strong">{{ r.score.total|score }}</td>
+      <td>{{ r.score.tier }}</td>
+      <td class="num">{{ r.score.coverage|pct }} <span class="muted">({{ r.score.confidence }})</span></td>
+      <td class="muted">{{ r.fetched_at|when }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<div class="actions"><button type="submit">Compare selected</button> <a class="button secondary" href="/export.csv">Export CSV</a></div>
+</form>
+{% else %}
+<div class="empty">
+  <p><strong>No artists yet.</strong> Search for an artist above to fetch their metrics and score.</p>
+  <p class="muted">Want to look around first? Run <code>artistscore demo</code> to add three clearly-labelled synthetic artists.
+  Add free API keys under <a href="/settings">Settings</a> for fuller coverage.</p>
+</div>
+{% endif %}
+{% endblock %}

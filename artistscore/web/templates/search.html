@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Search · ArtistScore{% endblock %}
+{% block content %}
+<h1>Find an artist</h1>
+{% include "_search_form.html" %}
+{% if error %}<p class="notice error">{{ error }}</p>{% endif %}
+{% if q %}
+  {% if candidates %}
+  <p class="muted">Several artists can share a name. Pick the right one (MusicBrainz identity), and its platform links are filled in automatically.</p>
+  <ul class="candidates">
+  {% for c in candidates %}
+    <li>
+      <form action="/artists" method="post">
+        <input type="hidden" name="mbid" value="{{ c.mbid }}"><input type="hidden" name="name" value="{{ c.name }}">
+        <button type="submit">Add</button>
+      </form>
+      <div><strong>{{ c.name }}</strong>
+        <span class="muted">{{ [c.type, c.country, c.begin and ('since ' ~ c.begin)]|select|join(' · ') }}</span>
+        {% if c.disambiguation %}<div class="muted">{{ c.disambiguation }}</div>{% endif %}
+      </div>
+      <span class="pill">match {{ c.score }}</span>
+    </li>
+  {% endfor %}
+  </ul>
+  {% elif not error %}<p>No MusicBrainz match for “{{ q }}”.</p>{% endif %}
+  <form class="inline" action="/artists/manual" method="post">
+    <input type="hidden" name="name" value="{{ q }}">
+    <button class="secondary" type="submit">Add “{{ q }}” without MusicBrainz</button>
+    <span class="muted">You can enter platform links and numbers by hand.</span>
+  </form>
+{% endif %}
+{% endblock %}

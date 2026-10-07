@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ArtistScore{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">ArtistScore</a>
+    <nav>
+      <a href="/">Artists</a>
+      <a href="/compare">Compare</a>
+      <a href="/weights">Weights</a>
+      <a href="/settings">Settings</a>
+    </nav>
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="muted">ArtistScore {{ version }} · runs locally · data stays on this machine ·
+    <a href="https://github.com/snowcrab22/artist-market-data-researcher/blob/main/docs/research/metric-weights.md">how the score works</a>
+  </footer>
+</body>
+</html>

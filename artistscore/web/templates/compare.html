@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Compare · ArtistScore{% endblock %}
+{% block content %}
+<h1>Compare</h1>
+{% if reports %}
+<div class="scroll">
+<table class="data compare">
+  <thead><tr><th></th>{% for r in reports %}<th class="num"><a href="/artist/{{ r.artist.id }}">{{ r.artist.name }}</a></th>{% endfor %}</tr></thead>
+  <tbody>
+    <tr class="strong"><td>Total score</td>{% for r in reports %}<td class="num big-cell">{{ r.score.total|score }}</td>{% endfor %}</tr>
+    <tr><td>Tier</td>{% for r in reports %}<td class="num">{{ r.score.tier }}</td>{% endfor %}</tr>
+    <tr><td>Coverage</td>{% for r in reports %}<td class="num">{{ r.score.coverage|pct }}</td>{% endfor %}</tr>
+    {% for pkey, pcfg in weights.pillars.items() %}
+      <tr class="section"><td colspan="{{ reports|length + 1 }}">{{ pcfg.label }}</td></tr>
+      <tr><td>Pillar score</td>{% for r in reports %}{% set p = r.score.pillars[pkey] %}<td class="num">
+        {% if p.score is not none %}<div class="bar small-bar" title="{{ p.score|score }}"><span style="width: {{ p.score }}%"></span></div>{% endif %}{{ p.score|score }}</td>{% endfor %}</tr>
+      {% for key, mcfg in pcfg.metrics.items() %}
+        <tr><td class="muted">{{ mcfg.label }}</td>{% for r in reports %}<td class="num">{% if key in r.metrics %}{{ r.metrics[key].value|metric_value(key) }}{% else %}<span class="muted">—</span>{% endif %}</td>{% endfor %}</tr>
+      {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% else %}<p>Add artists first, then tick them on the <a href="/">Artists</a> page.</p>{% endif %}
+{% endblock %}

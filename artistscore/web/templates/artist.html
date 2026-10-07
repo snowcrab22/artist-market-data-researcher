@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% set s = r.score %}
+{% set a = r.artist %}
+{% block title %}{{ a.name }} · ArtistScore{% endblock %}
+{% block head %}{% if job == 'running' %}<meta http-equiv="refresh" content="3">{% endif %}{% endblock %}
+{% block content %}
+<div class="title-row">
+  <h1>{{ a.name }}</h1>
+  <div class="actions">
+    <form action="/artist/{{ a.id }}/refresh" method="post"><button type="submit" {% if job == 'running' %}disabled{% endif %}>
+      {% if job == 'running' %}Refreshing…{% else %}Refresh data{% endif %}</button></form>
+    <a class="button secondary" href="/artist/{{ a.id }}.json">JSON</a>
+  </div>
+</div>
+<p class="muted">Last refreshed: {{ r.fetched_at|when }}
+  {% if a.mbid %}· <a href="https://musicbrainz.org/artist/{{ a.mbid }}">MusicBrainz</a>{% endif %}</p>
+{% if job == 'running' %}<p class="notice">Fetching every platform. This page reloads automatically (MusicBrainz and setlist.fm are rate-limited, so allow ~20 s).</p>
+{% elif job %}<p class="notice error">{{ job }}</p>{% endif %}
+
+<section class="hero">
+  <div class="hero-number">
+    <div class="big">{{ s.total|score }}</div>
+    <div class="label">of 100 · <strong>{{ s.tier }}</strong></div>
+  </div>
+  <div class="hero-meta">
+    <div><span class="muted">Data coverage</span> <strong>{{ s.coverage|pct }}</strong> · {{ s.confidence }} confidence</div>
+    {% if s.confidence == 'low' %}<p class="muted small">Less than 40% of the model's weight was measured. Add API keys in
+      <a href="/settings">Settings</a>, fill missing links below, or enter known numbers by hand.</p>{% endif %}
+  </div>
+</section>
+
+<section>
+  <h2>Score breakdown</h2>
+  <table class="data pillars">
+    <thead><tr><th>Pillar</th><th class="bar-col">Pillar score (0–100)</th><th class="num">Score</th><th class="num">Share of total</th></tr></thead>
+    <tbody>
+    {% for p in s.pillars.values() %}
+      <tr>
+        <td>{{ p.label }}{% if p.mode == 'adjust' %} <span class="muted small">(± adjustment)</span>{% endif %}</td>
+        <td class="bar-col">{% if p.score is not none %}<div class="bar" title="{{ p.label }}: {{ p.score|score }}"><span style="width: {{ p.score }}%"></span></div>{% else %}<span class="muted small">no data</span>{% endif %}</td>
+        <td class="num strong">{{ p.score|score }}</td>
+        <td class="num muted">{% if p.mode == 'adjust' %}{% if p.score is not none %}{{ '%+.1f'|format((p.score - 50) * p.effective_weight) }} pts{% else %}—{% endif %}{% else %}{{ p.effective_weight|pct }}{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>Metrics</h2>
+  {% for p in s.pillars.values() %}
+  <h3>{{ p.label }}</h3>
+  <table class="data metrics">
+    <thead><tr><th>Metric</th><th class="num">Value</th><th class="num">Metric score</th><th class="num">Weight in total</th><th>Source</th></tr></thead>
+    <tbody>
+    {% for m in p.metrics %}
+      <tr><td>{{ m.label }}</td><td class="num">{{ m.value|metric_value(m.key) }}</td><td class="num">{{ m.score|score }}</td>
+        <td class="num muted">{{ '%.1f'|format(m.effective_weight * 100) }}%</td><td class="muted">{{ m.source }}</td></tr>
+    {% endfor %}
+    {% for key in p.missing %}
+      <tr class="missing"><td>{{ weights.pillars[p.key].metrics[key].label }}</td><td class="num">—</td><td colspan="3" class="muted small">not available, so its weight is shared by the other metrics</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endfor %}
+</section>
+
+{% set pts = history_points(r.history) %}
+{% if pts|length > 1 %}
+<section>
+  <h2>Score history</h2>
+  <svg class="history" viewBox="0 0 640 160" role="img" aria-label="Score over time">
+    {% for g in [0, 25, 50, 75, 100] %}{% set gy = 160 - 28 - g / 100 * 104 %}
+      <line class="grid" x1="28" x2="612" y1="{{ gy }}" y2="{{ gy }}"/><text class="axis" x="22" y="{{ gy + 4 }}" text-anchor="end">{{ g }}</text>
+    {% endfor %}
+    <polyline class="line" points="{% for p in pts %}{{ p.x }},{{ p.y }} {% endfor %}"/>
+    {% for p in pts %}<g class="pt"><circle cx="{{ p.x }}" cy="{{ p.y }}" r="5"/><circle class="hit" cx="{{ p.x }}" cy="{{ p.y }}" r="14"><title>{{ p.label }}: {{ p.total|score }}</title></circle></g>{% endfor %}
+    <text class="direct" x="{{ pts[-1].x - 8 }}" y="{{ pts[-1].y - 10 }}" text-anchor="end">{{ pts[-1].total|score }}</text>
+  </svg>
+  <table class="data compact"><thead><tr><th>Snapshot</th><th class="num">Score</th><th>Tier</th><th class="num">Coverage</th></tr></thead><tbody>
+  {% for h in r.history|reverse %}<tr><td>{{ h.fetched_at|when }}</td><td class="num">{{ h.total|score }}</td><td>{{ h.tier }}</td><td class="num">{{ h.coverage|pct }}</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endif %}
+
+<section>
+  <h2>Live history</h2>
+  {% set fests = r.details.get('festivals', []) %}
+  <h3>Festival appearances {% if fests %}<span class="muted small">({{ fests|length }})</span>{% endif %}</h3>
+  {% if fests %}
+  <table class="data compact"><thead><tr><th>Festival</th><th>Tier</th><th>Date</th><th>Billing</th><th>Found via</th></tr></thead><tbody>
+  {% for f in fests %}<tr><td>{{ f.name }}</td><td>{{ f.tier }}</td><td>{{ f.date }}</td><td>{{ f.role or '—' }}</td><td class="muted">{{ f.source }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% else %}<p class="muted">None found. Festival detection uses MusicBrainz events, setlist.fm and Ticketmaster.</p>{% endif %}
+  {% set shows = r.details.get('shows', []) %}
+  <h3>Recent shows</h3>
+  {% if shows %}
+  <table class="data compact"><thead><tr><th>Date</th><th>Event / venue</th><th>City</th><th>Country</th><th>Source</th></tr></thead><tbody>
+  {% for sh in shows[:25] %}<tr><td>{{ sh.date }}</td><td>{{ sh.venue or sh.name }}</td><td>{{ sh.city or '' }}</td><td>{{ sh.country or '' }}</td><td class="muted">{{ sh.source }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% else %}<p class="muted">No show history. Add a setlist.fm key in <a href="/settings">Settings</a>.</p>{% endif %}
+  {% set upcoming = r.details.get('upcoming', []) %}
+  {% if upcoming %}
+  <h3>Upcoming</h3>
+  <table class="data compact"><thead><tr><th>Date</th><th>Event</th><th>Venue</th><th>City</th></tr></thead><tbody>
+  {% for u in upcoming[:25] %}<tr><td>{{ u.date }}</td><td>{{ u.name }}</td><td>{{ u.venue }}</td><td>{{ u.city }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% endif %}
+</section>
+
+<section>
+  <h2>Sources</h2>
+  {% if r.sources %}
+  <table class="data compact"><thead><tr><th>Source</th><th>Status</th><th>Details</th></tr></thead><tbody>
+  {% for name, src in r.sources.items() %}
+    <tr><td>{{ src.label or name }}</td>
+      <td><span class="status status-{{ src.status }}">{% if src.status == 'ok' %}✓ ok{% elif src.status == 'skipped' %}– skipped{% else %}✕ error{% endif %}</span></td>
+      <td class="muted small">{% if src.status == 'ok' %}{{ src.metrics|join(', ') or 'no metrics' }}{% else %}{{ src.error }}{% endif %}</td></tr>
+  {% endfor %}
+  </tbody></table>
+  {% else %}<p class="muted">Not refreshed yet.</p>{% endif %}
+</section>
+
+<section id="manual">
+  <h2>Manual values</h2>
+  <p class="muted small">Numbers you enter here override fetched values (marked “manual”). Use them for data with no free source, such as average hard-ticket sales from Pollstar or your own settlements, or for platforms that blocked automated access. Engagement rates accept “2.5%”. Leave a field blank to remove it.</p>
+  <form class="grid-form" action="/artist/{{ a.id }}/overrides" method="post">
+    {% for pkey, pcfg in weights.pillars.items() if pcfg.get('mode') != 'adjust' %}
+      {% for key, mcfg in pcfg.metrics.items() %}
+        <label><span>{{ mcfg.label }}</span>
+          <input name="{{ key }}" inputmode="decimal" value="{% if key in a.overrides %}{{ a.overrides[key]|metric_value(key) if key.endswith('_rate') else '%g'|format(a.overrides[key]) }}{% endif %}"
+                 placeholder="{% if key in r.metrics and r.metrics[key].source != 'manual' %}fetched: {{ r.metrics[key].value|metric_value(key) }}{% endif %}"></label>
+      {% endfor %}
+    {% endfor %}
+    <div class="actions"><button type="submit">Save manual values</button></div>
+  </form>
+</section>
+
+<section id="links">
+  <h2>Platform links</h2>
+  <p class="muted small">Found automatically from MusicBrainz and Wikidata. Fix or add any of them; pasting a full profile URL works. Refresh afterwards.</p>
+  <form class="grid-form" action="/artist/{{ a.id }}/links" method="post">
+    {% for field, label in link_labels.items() %}
+      <label><span>{{ label }}</span><input name="{{ field }}" value="{{ a.links[field] or '' }}"></label>
+    {% endfor %}
+    <div class="actions"><button type="submit">Save links</button></div>
+  </form>
+</section>
+
+<section>
+  <form action="/artist/{{ a.id }}/delete" method="post" onsubmit="return confirm('Delete {{ a.name|e }} and all its snapshots?')">
+    <button class="danger" type="submit">Delete artist</button>
+  </form>
+</section>
+{% endblock %}

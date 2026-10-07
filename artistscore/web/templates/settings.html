@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Settings · ArtistScore{% endblock %}
+{% block content %}
+<h1>Settings</h1>
+{% if request.query_params.get('saved') %}<p class="notice">Saved.</p>{% endif %}
+<p class="muted">All keys below are free (Bandsintown's app_id is issued on request). Keys are stored only in this machine's local database. Values set in environment variables or <code>.env</code> are used when nothing is saved here.</p>
+<form action="/settings" method="post">
+  <table class="data">
+    <thead><tr><th>Setting</th><th>Status</th><th>Value</th><th>Get one</th></tr></thead>
+    <tbody>
+    {% for row in rows %}
+      <tr>
+        <td>{{ row.label }}<div class="muted small"><code>{{ row.key }}</code></div></td>
+        <td>{% if row.effective %}<span class="status status-ok">✓ set{% if row.from_env %} (env){% endif %}</span>{% else %}<span class="status status-skipped">– not set</span>{% endif %}</td>
+        <td>{% if row.secret %}
+              <input name="{{ row.key }}" type="password" autocomplete="off" placeholder="{% if row.stored %}saved; leave blank to keep{% else %}paste key{% endif %}">
+              {% if row.stored %}<label class="small"><input type="checkbox" name="clear__{{ row.key }}"> clear</label>{% endif %}
+            {% else %}<input name="{{ row.key }}" value="{{ row.stored }}">{% endif %}</td>
+        <td>{% if row.url %}<a href="{{ row.url }}" target="_blank" rel="noopener">sign up</a>{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="actions"><button type="submit">Save settings</button></div>
+</form>
+<h2>Sources</h2>
+<table class="data compact"><thead><tr><th>Source</th><th>Needs</th><th>Ready</th></tr></thead><tbody>
+{% for s in sources %}<tr><td>{{ s.label }}</td><td class="muted small">{{ s.requires|join(', ') or 'nothing' }}</td>
+  <td>{% if s.ready %}<span class="status status-ok">✓ ready</span>{% else %}<span class="status status-skipped">– needs key</span>{% endif %}</td></tr>{% endfor %}
+</tbody></table>
+<p class="muted small">Instagram, TikTok, SoundCloud and the Spotify page are read from public pages on a best-effort basis. These platforms often block automated requests, so enter their numbers under an artist's “Manual values” when that happens. Disable any source by adding its name (e.g. <code>instagram,tiktok</code>) to “Disabled sources”.</p>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Weights · ArtistScore{% endblock %}
+{% block content %}
+<h1>Weights</h1>
+<p class="muted">The defaults come from the research in <a href="https://github.com/snowcrab22/artist-market-data-researcher/blob/main/docs/research/metric-weights.md">docs/research/metric-weights.md</a>.
+Weights are relative: pillars against pillars, and metrics against the other metrics in the same pillar. When a metric has no data for an artist, its weight is shared out among the rest.
+Saving re-scores every artist from the stored data; nothing is re-fetched.
+{% if customised %}<strong>Custom weights are active.</strong>{% endif %}</p>
+{% if error %}<p class="notice error">{{ error }}</p>{% endif %}
+{% if request.query_params.get('saved') %}<p class="notice">Saved.</p>{% endif %}
+<form action="/weights" method="post">
+{% for pkey, p in weights.pillars.items() %}
+  <fieldset>
+    <legend>{{ p.label }}</legend>
+    <label class="pillar-weight"><span>Pillar weight{% if p.get('mode') == 'adjust' %} <span class="muted small">(adjusts the total by up to ± weight ÷ 2 points)</span>{% endif %}</span>
+      <input name="pillar__{{ pkey }}" type="number" min="0" step="any" value="{{ '%g'|format(p.weight) }}"></label>
+    <table class="data compact">
+      <thead><tr><th>Metric</th><th>Scale</th><th class="num">Weight</th></tr></thead>
+      <tbody>
+      {% for mkey, m in p.metrics.items() %}
+        <tr><td>{{ m.label }}</td>
+          <td class="muted small">{% if m.scale == 'log' %}log {{ m.lo|compact }} → {{ m.hi|compact }}{% elif m.scale == 'growth' %}growth, +{{ (m.full * 100)|round|int }}% = 100{% else %}vs {{ m.platform }} size benchmark{% endif %}</td>
+          <td class="num"><input class="num-input" name="metric__{{ pkey }}__{{ mkey }}" type="number" min="0" step="any" value="{{ '%g'|format(m.weight) }}" aria-label="{{ m.label }} weight"></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </fieldset>
+{% endfor %}
+<div class="actions"><button type="submit">Save weights</button></div>
+</form>
+<form action="/weights/reset" method="post" class="actions"><button class="secondary" type="submit">Reset to researched defaults</button></form>
+{% endblock %}
