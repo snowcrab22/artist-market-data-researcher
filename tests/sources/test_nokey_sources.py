@@ -160,3 +160,15 @@ async def test_network_failure_is_error(make_ctx):
     respx.get("https://soundcloud.com/x").mock(side_effect=httpx.ConnectError("boom"))
     result = await run_source(soundcloud, make_ctx(soundcloud="x"))
     assert result.status == "error"
+
+
+@respx.mock
+async def test_spotify_ignores_followers_of_other_entities(make_ctx):
+    html = ('<html><head><meta property="og:description" content="Artist · 2.3M monthly listeners."/></head><body>'
+            '<script>{"playlist":{"name":"Hits","followers":98765432}}' + " " * 400 +
+            '{"stats":{"monthlyListeners":2312877,"worldRank":0}}</script>'
+            '<div>Top playlist · 5.1M followers</div></body></html>')
+    respx.get("https://open.spotify.com/artist/sp3").respond(200, text=html)
+    result = await run_source(spotify, make_ctx(spotify_id="sp3"))
+    assert result.metrics["spotify_monthly_listeners"].value == 2_312_877
+    assert "spotify_followers" not in result.metrics

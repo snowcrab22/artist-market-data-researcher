@@ -14,10 +14,11 @@ LABEL = "Spotify (public artist page)"
 REQUIRES: list[str] = []
 
 JSON_LISTENERS = re.compile(r'"monthlyListeners"\s*:\s*(\d+)')
-JSON_FOLLOWERS = [re.compile(r'"followers"\s*:\s*\{\s*"totalCount"\s*:\s*(\d+)'),
-                  re.compile(r'"followers"\s*:\s*(\d+)')]
-TEXT_LISTENERS = re.compile(r"(\d[\d,.\s  ]*[KMB]?)\s*monthly listeners", re.IGNORECASE)
-TEXT_FOLLOWERS = re.compile(r"(\d[\d,.\s  ]*[KMB]?)\s*followers", re.IGNORECASE)
+JSON_FOLLOWERS = re.compile(r'"followers"\s*:\s*(?:\{\s*"totalCount"\s*:\s*)?(\d+)')
+TEXT_LISTENERS = re.compile(r"(\d[\d,.\s\u202f\u00a0]*[KMB]?)\s*monthly listeners", re.IGNORECASE)
+# Artist follower counts sit in the same stats object as monthlyListeners. Anything further away (or page text
+# such as "5.1M followers") may belong to a playlist or a related artist, so it is not used.
+STATS_WINDOW = 150
 BASE64_SCRIPT = re.compile(r'<script[^>]*type="text/plain"[^>]*>([A-Za-z0-9+/=\s]{40,})</script>')
 
 
@@ -41,15 +42,12 @@ def _best_text_count(pattern: re.Pattern[str], text: str) -> float | None:
 
 def parse_page(html: str) -> tuple[float | None, float | None]:
     text = _embedded_text(html)
-    listeners = float(m.group(1)) if (m := JSON_LISTENERS.search(text)) else _best_text_count(TEXT_LISTENERS, text)
-    followers = None
-    for pattern in JSON_FOLLOWERS:
-        if m := pattern.search(text):
-            followers = float(m.group(1))
-            break
-    if followers is None:
-        followers = _best_text_count(TEXT_FOLLOWERS, text)
-    return listeners, followers
+    stats = JSON_LISTENERS.search(text)
+    if stats is None:
+        return _best_text_count(TEXT_LISTENERS, text), None
+    window = text[max(0, stats.start() - STATS_WINDOW): stats.end() + STATS_WINDOW]
+    followers = JSON_FOLLOWERS.search(window)
+    return float(stats.group(1)), float(followers.group(1)) if followers else None
 
 
 async def fetch(ctx: SourceContext) -> SourceResult:

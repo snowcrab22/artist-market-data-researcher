@@ -139,3 +139,14 @@ def test_delete_artist(client, service):
     artist_id = _seeded(client, service)
     client.post(f"/artist/{artist_id}/delete")
     assert service.store.get_artist(artist_id) is None
+
+
+def test_delete_confirm_survives_apostrophes(client, service):
+    artist_id = service.store.create_artist("Guns N' Roses", None, ArtistLinks())
+    page = client.get(f"/artist/{artist_id}").text
+    form = page[page.index(f'action="/artist/{artist_id}/delete"'):]
+    form = form[: form.index("</form>")]
+    handler = form[form.index("onsubmit="):]
+    assert "Guns N" not in handler  # the name is not spliced into the JS handler
+    assert 'data-name="Guns N&#39; Roses"' in form
+    assert "this.dataset.name" in form

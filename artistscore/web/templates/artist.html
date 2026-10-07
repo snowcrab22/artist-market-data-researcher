@@ -148,7 +148,8 @@
 </section>
 
 <section>
-  <form action="/artist/{{ a.id }}/delete" method="post" onsubmit="return confirm('Delete {{ a.name|e }} and all its snapshots?')">
+  <form action="/artist/{{ a.id }}/delete" method="post" data-name="{{ a.name }}"
+        onsubmit="return confirm('Delete ' + this.dataset.name + ' and all its snapshots?')">
     <button class="danger" type="submit">Delete artist</button>
   </form>
 </section>
