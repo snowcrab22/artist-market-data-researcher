@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "artistscore"
+version = "0.1.0"
+description = "Aggregate music-artist market metrics from streaming, social and live platforms into a researched 0-100 score."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+  "fastapi>=0.110",
+  "jinja2>=3.1",
+  "httpx>=0.27",
+  "pyyaml>=6.0",
+  "uvicorn[standard]>=0.29",
+  "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "respx>=0.21"]
+
+[project.scripts]
+artistscore = "artistscore.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["artistscore*"]
+
+[tool.setuptools.package-data]
+artistscore = ["*.yaml", "scoring/*.yaml", "web/templates/*.html", "web/static/*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
