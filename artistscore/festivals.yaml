@@ -1,0 +1,100 @@
+# Festival tier catalog used for festival_score (docs/research/metric-weights.md §3.3).
+# tier 1: global flagship festivals with the biggest talent budgets and international press.
+# tier 2: major national / genre flagship festivals.
+# Anything else recognisably a festival scores as tier 3.
+# aliases and venues are matched case- and accent-insensitively on word boundaries.
+festivals:
+  # ---- tier 1 ----
+  - {name: Coachella, tier: 1, aliases: [coachella], venues: [empire polo club]}
+  - {name: Glastonbury, tier: 1, aliases: [glastonbury], venues: [worthy farm]}
+  - {name: Lollapalooza, tier: 1, aliases: [lollapalooza]}
+  - {name: Primavera Sound, tier: 1, aliases: [primavera sound], venues: [parc del forum]}
+  - {name: Roskilde, tier: 1, aliases: [roskilde festival, roskilde festivalen]}
+  - {name: Fuji Rock, tier: 1, aliases: [fuji rock], venues: [naeba ski resort]}
+  - {name: Bonnaroo, tier: 1, aliases: [bonnaroo], venues: [great stage park]}
+  - {name: Outside Lands, tier: 1, aliases: [outside lands]}
+  - {name: Governors Ball, tier: 1, aliases: [governors ball, gov ball]}
+  - {name: Austin City Limits, tier: 1, aliases: [austin city limits music festival, acl festival, acl fest]}
+  - {name: Reading & Leeds, tier: 1, aliases: [reading festival, leeds festival, reading and leeds, reading leeds], venues: [bramham park, little john s farm]}
+  - {name: Rock Werchter, tier: 1, aliases: [rock werchter]}
+  - {name: Tomorrowland, tier: 1, aliases: [tomorrowland], venues: [de schorre]}
+  - {name: Open'er, tier: 1, aliases: [open er festival, opener festival, heineken open er]}
+  - {name: Sziget, tier: 1, aliases: [sziget]}
+  - {name: Rock am Ring, tier: 1, aliases: [rock am ring]}
+  - {name: Rock im Park, tier: 1, aliases: [rock im park]}
+  - {name: Download Festival, tier: 1, aliases: [download festival]}
+  - {name: Pinkpop, tier: 1, aliases: [pinkpop]}
+  - {name: Rolling Loud, tier: 1, aliases: [rolling loud]}
+  - {name: EDC, tier: 1, aliases: [electric daisy carnival, edc las vegas, edc orlando, edc mexico]}
+  - {name: Ultra Music Festival, tier: 1, aliases: [ultra music festival, ultra miami, ultra europe]}
+  - {name: Mad Cool, tier: 1, aliases: [mad cool]}
+  - {name: NOS Alive, tier: 1, aliases: [nos alive]}
+  - {name: Splendour in the Grass, tier: 1, aliases: [splendour in the grass]}
+  - {name: Summer Sonic, tier: 1, aliases: [summer sonic]}
+  - {name: Rock in Rio, tier: 1, aliases: [rock in rio]}
+  - {name: Stagecoach, tier: 1, aliases: [stagecoach festival, stagecoach country]}
+  - {name: Summerfest, tier: 1, aliases: [summerfest], venues: [henry maier festival park]}
+  - {name: Wacken Open Air, tier: 1, aliases: [wacken open air, wacken]}
+  - {name: Hellfest, tier: 1, aliases: [hellfest]}
+  - {name: BST Hyde Park, tier: 1, aliases: [bst hyde park, british summer time]}
+  - {name: Lowlands, tier: 1, aliases: [lowlands festival, a campingflight to lowlands paradise]}
+  - {name: Pukkelpop, tier: 1, aliases: [pukkelpop]}
+  # ---- tier 2 ----
+  - {name: Pitchfork Music Festival, tier: 2, aliases: [pitchfork music festival]}
+  - {name: Osheaga, tier: 2, aliases: [osheaga]}
+  - {name: Electric Forest, tier: 2, aliases: [electric forest]}
+  - {name: Shaky Knees, tier: 2, aliases: [shaky knees]}
+  - {name: Boston Calling, tier: 2, aliases: [boston calling]}
+  - {name: Firefly, tier: 2, aliases: [firefly music festival]}
+  - {name: Hangout Music Festival, tier: 2, aliases: [hangout music festival, hangout fest]}
+  - {name: BottleRock Napa Valley, tier: 2, aliases: [bottlerock]}
+  - {name: Life Is Beautiful, tier: 2, aliases: [life is beautiful festival, life is beautiful music]}
+  - {name: Riot Fest, tier: 2, aliases: [riot fest]}
+  - {name: Bumbershoot, tier: 2, aliases: [bumbershoot]}
+  - {name: Newport Folk Festival, tier: 2, aliases: [newport folk]}
+  - {name: Newport Jazz Festival, tier: 2, aliases: [newport jazz]}
+  - {name: CMA Fest, tier: 2, aliases: [cma fest, cma music festival]}
+  - {name: Sea.Hear.Now, tier: 2, aliases: [sea hear now]}
+  - {name: Kilby Block Party, tier: 2, aliases: [kilby block party]}
+  - {name: Day N Vegas, tier: 2, aliases: [day n vegas]}
+  - {name: Wireless Festival, tier: 2, aliases: [wireless festival]}
+  - {name: Parklife, tier: 2, aliases: [parklife festival, parklife manchester]}
+  - {name: Latitude, tier: 2, aliases: [latitude festival]}
+  - {name: Green Man, tier: 2, aliases: [green man festival]}
+  - {name: End of the Road, tier: 2, aliases: [end of the road festival]}
+  - {name: All Points East, tier: 2, aliases: [all points east]}
+  - {name: Creamfields, tier: 2, aliases: [creamfields]}
+  - {name: TRNSMT, tier: 2, aliases: [trnsmt]}
+  - {name: Isle of Wight Festival, tier: 2, aliases: [isle of wight festival]}
+  - {name: Boardmasters, tier: 2, aliases: [boardmasters]}
+  - {name: Electric Picnic, tier: 2, aliases: [electric picnic]}
+  - {name: Best Kept Secret, tier: 2, aliases: [best kept secret]}
+  - {name: Down the Rabbit Hole, tier: 2, aliases: [down the rabbit hole]}
+  - {name: Flow Festival, tier: 2, aliases: [flow festival]}
+  - {name: Way Out West, tier: 2, aliases: [way out west]}
+  - {name: Øya, tier: 2, aliases: [oya festival, oyafestivalen]}
+  - {name: Northside, tier: 2, aliases: [northside festival]}
+  - {name: Benicàssim, tier: 2, aliases: [benicassim, fib benicassim]}
+  - {name: Sónar, tier: 2, aliases: [sonar]}
+  - {name: BBK Live, tier: 2, aliases: [bbk live, bilbao bbk]}
+  - {name: Paléo, tier: 2, aliases: [paleo festival]}
+  - {name: Montreux Jazz Festival, tier: 2, aliases: [montreux jazz]}
+  - {name: North Sea Jazz, tier: 2, aliases: [north sea jazz]}
+  - {name: Hurricane Festival, tier: 2, aliases: [hurricane festival]}
+  - {name: Southside Festival, tier: 2, aliases: [southside festival]}
+  - {name: Melt Festival, tier: 2, aliases: [melt festival]}
+  - {name: Frequency, tier: 2, aliases: [frequency festival]}
+  - {name: Nova Rock, tier: 2, aliases: [nova rock]}
+  - {name: Exit Festival, tier: 2, aliases: [exit festival]}
+  - {name: Colours of Ostrava, tier: 2, aliases: [colours of ostrava]}
+  - {name: Les Vieilles Charrues, tier: 2, aliases: [vieilles charrues]}
+  - {name: Rock en Seine, tier: 2, aliases: [rock en seine]}
+  - {name: Les Eurockéennes, tier: 2, aliases: [eurockeennes]}
+  - {name: Dour Festival, tier: 2, aliases: [dour festival]}
+  - {name: Positivus, tier: 2, aliases: [positivus]}
+  - {name: Laneway Festival, tier: 2, aliases: [laneway festival, st jerome s laneway]}
+  - {name: Falls Festival, tier: 2, aliases: [falls festival]}
+  - {name: Vive Latino, tier: 2, aliases: [vive latino]}
+  - {name: Corona Capital, tier: 2, aliases: [corona capital]}
+  - {name: Estéreo Picnic, tier: 2, aliases: [estereo picnic]}
+  - {name: SXSW, tier: 3, aliases: [sxsw, south by southwest]}
