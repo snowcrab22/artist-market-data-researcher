@@ -23,6 +23,7 @@ def test_matches_accented_and_punctuated_names():
 
 def test_generic_festival_word_is_tier_three():
     assert match_festival("Some Town Fest") == ("Some Town Fest", 3)
+    assert match_festival("Some Town Fest 2024") == ("Some Town Fest", 3)
     assert match_festival(None, "Riverside Music Festival Grounds") == ("Riverside Music Festival Grounds", 3)
 
 

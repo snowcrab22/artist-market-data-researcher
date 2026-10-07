@@ -21,6 +21,7 @@ WINDOW_YEARS = 5.0
 
 GENERIC = re.compile(r"\b(festival|festivals|fest|festivalen|festiwal|open air|openair)\b")
 # Permanent venues named after festivals ("Royal Festival Hall") are not festivals.
+TRAILING_YEAR = re.compile(r"[\s\-–,]*\b(19|20)\d{2}\b\s*$")
 VENUE_WORDS = re.compile(r"\bfestival (hall|theatre|theater|centre|center|house|arena|pavilion|ballroom|plaza|square)\b")
 
 
@@ -51,7 +52,7 @@ def match_festival(*texts: str | None) -> tuple[str, int] | None:
     for text in present:
         norm = normalise(text)
         if GENERIC.search(norm) and not VENUE_WORDS.search(norm):
-            return text.strip(), 3
+            return TRAILING_YEAR.sub("", text).strip() or text.strip(), 3
     return None
 
 
