@@ -1,0 +1,31 @@
+{
+ "entities": {
+  "Q42": {
+   "claims": {
+    "P7085": [
+     {
+      "mainsnak": {
+       "datavalue": {
+        "value": "testartist_tt"
+       }
+      }
+     }
+    ],
+    "P1902": [
+     {
+      "mainsnak": {
+       "datavalue": {
+        "value": "SHOULD_NOT_OVERRIDE"
+       }
+      }
+     }
+    ]
+   },
+   "sitelinks": {
+    "enwiki": {
+     "title": "Test Artist (band)"
+    }
+   }
+  }
+ }
+}

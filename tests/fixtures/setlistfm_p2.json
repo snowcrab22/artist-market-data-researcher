@@ -1,0 +1,62 @@
+{
+ "type": "setlists",
+ "itemsPerPage": 3,
+ "page": 2,
+ "total": 6,
+ "setlist": [
+  {
+   "id": "03-08-2025",
+   "eventDate": "03-08-2025",
+   "artist": {
+    "mbid": "mbid-1",
+    "name": "Test Artist"
+   },
+   "venue": {
+    "name": "Riverside Music Festival Grounds",
+    "city": {
+     "name": "Austin",
+     "country": {
+      "code": "US",
+      "name": "US"
+     }
+    }
+   }
+  },
+  {
+   "id": "01-03-2025",
+   "eventDate": "01-03-2025",
+   "artist": {
+    "mbid": "mbid-1",
+    "name": "Test Artist"
+   },
+   "venue": {
+    "name": "Paradiso",
+    "city": {
+     "name": "Amsterdam",
+     "country": {
+      "code": "NL",
+      "name": "NL"
+     }
+    }
+   }
+  },
+  {
+   "id": "01-03-2024",
+   "eventDate": "01-03-2024",
+   "artist": {
+    "mbid": "mbid-1",
+    "name": "Test Artist"
+   },
+   "venue": {
+    "name": "Old Hall",
+    "city": {
+     "name": "Paris",
+     "country": {
+      "code": "FR",
+      "name": "FR"
+     }
+    }
+   }
+  }
+ ]
+}

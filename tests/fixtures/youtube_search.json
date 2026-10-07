@@ -1,0 +1,20 @@
+{
+ "items": [
+  {
+   "id": {
+    "channelId": "UCtopic"
+   },
+   "snippet": {
+    "title": "Test Artist - Topic"
+   }
+  },
+  {
+   "id": {
+    "channelId": "UC123"
+   },
+   "snippet": {
+    "title": "Test Artist"
+   }
+  }
+ ]
+}

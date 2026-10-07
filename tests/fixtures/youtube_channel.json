@@ -1,0 +1,21 @@
+{
+ "items": [
+  {
+   "id": "UC123",
+   "snippet": {
+    "title": "Test Artist"
+   },
+   "statistics": {
+    "viewCount": "500000000",
+    "subscriberCount": "1200000",
+    "hiddenSubscriberCount": false,
+    "videoCount": "150"
+   },
+   "contentDetails": {
+    "relatedPlaylists": {
+     "uploads": "UU123"
+    }
+   }
+  }
+ ]
+}

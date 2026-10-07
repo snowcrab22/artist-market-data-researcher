@@ -1,0 +1,24 @@
+{
+ "count": 2,
+ "artists": [
+  {
+   "id": "mbid-1",
+   "name": "Test Artist",
+   "score": 100,
+   "type": "Group",
+   "country": "GB",
+   "disambiguation": "UK rock band",
+   "life-span": {
+    "begin": "1991"
+   }
+  },
+  {
+   "id": "mbid-2",
+   "name": "Test Artist",
+   "score": 95,
+   "type": "Person",
+   "country": "US",
+   "disambiguation": "rapper"
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "artist": {
+  "name": "Test Artist",
+  "mbid": "mbid-1",
+  "url": "https://www.last.fm/music/Test+Artist",
+  "stats": {
+   "listeners": "250000",
+   "playcount": "7500000"
+  }
+ }
+}

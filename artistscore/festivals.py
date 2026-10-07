@@ -41,14 +41,19 @@ def _catalog() -> list[tuple[str, int, re.Pattern[str]]]:
     return entries
 
 
-def match_festival(*texts: str | None) -> tuple[str, int] | None:
-    """Recognise a festival from event name / venue / tour texts. Returns (name, tier) or None."""
+def match_festival(*texts: str | None, generic: bool = True) -> tuple[str, int] | None:
+    """Recognise a festival from event name / venue / tour texts. Returns (name, tier) or None.
+
+    With generic=False only catalog festivals match (used for tour names like "Festival Tour 2026").
+    """
     present = [t for t in texts if t]
     for text in present:
         norm = normalise(text)
         for name, tier, pattern in _catalog():
             if pattern.search(norm):
                 return name, tier
+    if not generic:
+        return None
     for text in present:
         norm = normalise(text)
         if GENERIC.search(norm) and not VENUE_WORDS.search(norm):

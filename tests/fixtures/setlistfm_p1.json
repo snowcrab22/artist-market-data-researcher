@@ -1,0 +1,68 @@
+{
+ "type": "setlists",
+ "itemsPerPage": 3,
+ "page": 1,
+ "total": 6,
+ "setlist": [
+  {
+   "id": "01-12-2026",
+   "eventDate": "01-12-2026",
+   "artist": {
+    "mbid": "mbid-1",
+    "name": "Test Artist"
+   },
+   "venue": {
+    "name": "Future Arena",
+    "city": {
+     "name": "Berlin",
+     "country": {
+      "code": "DE",
+      "name": "DE"
+     }
+    }
+   }
+  },
+  {
+   "id": "20-09-2026",
+   "eventDate": "20-09-2026",
+   "artist": {
+    "mbid": "mbid-1",
+    "name": "Test Artist"
+   },
+   "venue": {
+    "name": "Brixton Academy",
+    "city": {
+     "name": "London",
+     "country": {
+      "code": "GB",
+      "name": "GB"
+     }
+    }
+   },
+   "tour": {
+    "name": "World Tour 2026"
+   }
+  },
+  {
+   "id": "12-04-2026",
+   "eventDate": "12-04-2026",
+   "artist": {
+    "mbid": "mbid-1",
+    "name": "Test Artist"
+   },
+   "venue": {
+    "name": "Empire Polo Club",
+    "city": {
+     "name": "Indio",
+     "country": {
+      "code": "US",
+      "name": "US"
+     }
+    }
+   },
+   "tour": {
+    "name": "Festival Tour 2026"
+   }
+  }
+ ]
+}

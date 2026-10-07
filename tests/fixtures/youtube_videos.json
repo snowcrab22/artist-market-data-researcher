@@ -1,0 +1,20 @@
+{
+ "items": [
+  {
+   "id": "v1",
+   "statistics": {
+    "viewCount": "100000",
+    "likeCount": "4000",
+    "commentCount": "1000"
+   }
+  },
+  {
+   "id": "v2",
+   "statistics": {
+    "viewCount": "100000",
+    "likeCount": "2000",
+    "commentCount": "1000"
+   }
+  }
+ ]
+}

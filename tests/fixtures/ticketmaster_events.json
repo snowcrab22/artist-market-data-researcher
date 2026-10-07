@@ -1,0 +1,48 @@
+{
+ "_embedded": {
+  "events": [
+   {
+    "name": "Lollapalooza 2027 - 3 Day Pass",
+    "dates": {
+     "start": {
+      "localDate": "2027-07-30"
+     }
+    },
+    "_embedded": {
+     "venues": [
+      {
+       "name": "Grant Park",
+       "city": {
+        "name": "Chicago"
+       },
+       "country": {
+        "countryCode": "US"
+       }
+      }
+     ]
+    }
+   },
+   {
+    "name": "Test Artist: The Tour",
+    "dates": {
+     "start": {
+      "localDate": "2026-11-15"
+     }
+    },
+    "_embedded": {
+     "venues": [
+      {
+       "name": "The Fillmore",
+       "city": {
+        "name": "SF"
+       },
+       "country": {
+        "countryCode": "US"
+       }
+      }
+     ]
+    }
+   }
+  ]
+ }
+}

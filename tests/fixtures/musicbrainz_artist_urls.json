@@ -1,0 +1,60 @@
+{
+ "id": "mbid-1",
+ "name": "Test Artist",
+ "relations": [
+  {
+   "type": "free streaming",
+   "url": {
+    "resource": "https://open.spotify.com/artist/4Z8W4fKeB5YxbusRsdQVPb"
+   }
+  },
+  {
+   "type": "social network",
+   "url": {
+    "resource": "https://www.instagram.com/testartist/"
+   }
+  },
+  {
+   "type": "youtube",
+   "url": {
+    "resource": "https://www.youtube.com/channel/UC123"
+   }
+  },
+  {
+   "type": "youtube music",
+   "url": {
+    "resource": "https://music.youtube.com/channel/UCmusic"
+   }
+  },
+  {
+   "type": "free streaming",
+   "url": {
+    "resource": "https://www.deezer.com/artist/399"
+   }
+  },
+  {
+   "type": "last.fm",
+   "url": {
+    "resource": "https://www.last.fm/music/Test+Artist"
+   }
+  },
+  {
+   "type": "social network",
+   "url": {
+    "resource": "https://twitter.com/testartist"
+   }
+  },
+  {
+   "type": "soundcloud",
+   "url": {
+    "resource": "https://soundcloud.com/testartist"
+   }
+  },
+  {
+   "type": "wikidata",
+   "url": {
+    "resource": "https://www.wikidata.org/wiki/Q42"
+   }
+  }
+ ]
+}
