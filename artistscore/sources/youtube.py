@@ -40,6 +40,11 @@ async def fetch(ctx: SourceContext) -> SourceResult:
         params["id"] = channel_id
         details["links"] = {"youtube_channel_id": channel_id}
     items = (await http.get_json(ctx.client, f"{API}/channels", params=params)).get("items", [])
+    if not items and "forHandle" in params:
+        # Legacy channel usernames (youtube.com/user/NAME) are not handles; retry as forUsername.
+        legacy = {k: v for k, v in params.items() if k != "forHandle"}
+        legacy["forUsername"] = params["forHandle"].lstrip("@")
+        items = (await http.get_json(ctx.client, f"{API}/channels", params=legacy)).get("items", [])
     if not items:
         raise SourceError("YouTube channel not found")
     channel = items[0]

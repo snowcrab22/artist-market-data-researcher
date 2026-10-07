@@ -84,6 +84,12 @@ def test_overrides_form(client, service):
     assert service.store.get_artist(artist_id)["overrides"] == {}
 
 
+def test_overrides_accept_thousands_and_decimal(client, service):
+    artist_id = _seeded(client, service)
+    client.post(f"/artist/{artist_id}/overrides", data={"avg_ticket_sales": "1,234.5"})
+    assert service.store.get_artist(artist_id)["overrides"] == {"avg_ticket_sales": 1234.5}
+
+
 def test_links_form(client, service):
     artist_id = _seeded(client, service)
     client.post(f"/artist/{artist_id}/links", data={"spotify_id": " https://open.spotify.com/artist/abc ",
@@ -112,6 +118,13 @@ def test_weights_rejects_negative(client, service):
     assert service.weights()["pillars"]["live"]["weight"] == 30
 
 
+@pytest.mark.parametrize("value", ["inf", "nan", "-inf"])
+def test_weights_rejects_non_finite(client, service, value):
+    response = client.post("/weights", data={"pillar__live": value})
+    assert response.status_code == 400
+    assert service.weights()["pillars"]["live"]["weight"] == 30
+
+
 def test_settings_saves_and_masks_keys(client, service):
     client.post("/settings", data={"LASTFM_API_KEY": "secret-value-123"})
     assert service.store.get_setting("LASTFM_API_KEY") == "secret-value-123"
@@ -123,6 +136,34 @@ def test_settings_saves_and_masks_keys(client, service):
     assert service.store.get_setting("LASTFM_API_KEY") == "secret-value-123"
     client.post("/settings", data={"clear__LASTFM_API_KEY": "on"})
     assert service.store.get_setting("LASTFM_API_KEY") == ""
+
+
+def test_cross_site_post_is_blocked(client, service):
+    response = client.post("/settings", data={"LASTFM_API_KEY": "evil"}, headers={"Origin": "https://evil.example"},
+                           follow_redirects=False)
+    assert response.status_code == 403
+    assert not service.store.get_setting("LASTFM_API_KEY")
+
+
+def test_same_origin_post_is_allowed(client, service):
+    response = client.post("/settings", data={"LASTFM_API_KEY": "good"}, headers={"Origin": "http://testserver"},
+                           follow_redirects=False)
+    assert response.status_code == 303
+    assert service.store.get_setting("LASTFM_API_KEY") == "good"
+
+
+def test_cross_site_referer_is_blocked(client, service):
+    response = client.post("/settings", data={"LASTFM_API_KEY": "evil"},
+                           headers={"Referer": "https://evil.example/page"}, follow_redirects=False)
+    assert response.status_code == 403
+    assert not service.store.get_setting("LASTFM_API_KEY")
+
+
+def test_null_origin_is_blocked(client, service):
+    response = client.post("/settings", data={"LASTFM_API_KEY": "evil"}, headers={"Origin": "null"},
+                           follow_redirects=False)
+    assert response.status_code == 403
+    assert not service.store.get_setting("LASTFM_API_KEY")
 
 
 def test_compare_and_csv(client, service):

@@ -29,7 +29,7 @@ class SourceError(Exception):
 
 
 def parse_count(text: str | None) -> float | None:
-    """Parse "11.6M", "12,345", "1 234", "2.5K" into a number."""
+    """Parse "11.6M", "12,345", "1 234", "2.5K", "1,234.5" into a number."""
     if not text:
         return None
     cleaned = text.strip().replace(" ", "").replace(" ", "").replace(" ", "")
@@ -41,6 +41,10 @@ def parse_count(text: str | None) -> float | None:
         if "," in digits and "." not in digits:
             digits = digits.replace(",", ".")  # "1,2M" (European decimal comma)
         digits = digits.replace(",", "")
+    elif "," in digits and "." in digits:
+        # "1,234.5" / "1.234,5": the separator that comes last is the decimal point
+        decimal = "," if digits.rindex(",") > digits.rindex(".") else "."
+        digits = digits.replace("." if decimal == "," else ",", "").replace(decimal, ".")
     else:
         digits = digits.replace(",", "").replace(".", "") if re.fullmatch(r"\d{1,3}([.,]\d{3})+", digits) else digits
     try:

@@ -9,7 +9,9 @@ from tests.conftest import fixture_json, fixture_text
 
 @pytest.mark.parametrize("text,expected", [("11.6M", 11_600_000), ("12,345", 12_345), ("1 234", 1_234),
                                            ("987", 987), ("2.5K", 2_500), ("1.2B", 1_200_000_000),
-                                           ("1 234 567", 1_234_567), ("", None), ("n/a", None)])
+                                           ("1 234 567", 1_234_567), ("1,5K", 1_500),
+                                           ("1,234.5", 1_234.5), ("1.234,5", 1_234.5), ("12,345,678.25", 12_345_678.25),
+                                           ("", None), ("n/a", None)])
 def test_parse_count(text, expected):
     assert parse_count(text) == expected
 

@@ -74,6 +74,21 @@ async def test_youtube_handle_lookup(make_ctx):
 
 
 @respx.mock
+async def test_youtube_legacy_username_fallback(make_ctx):
+    channels = respx.get(f"{YT}/channels").mock(side_effect=[
+        respx.MockResponse(200, json={"items": []}),
+        respx.MockResponse(200, json=fixture_json("youtube_channel.json")),
+    ])
+    respx.get(f"{YT}/playlistItems").respond(200, json={"items": []})
+    result = await run_source(youtube, make_ctx(youtube_handle="legacyname", settings={"YOUTUBE_API_KEY": "k"}))
+    assert result.status == "ok"
+    assert channels.calls[0].request.url.params["forHandle"] == "@legacyname"
+    assert channels.calls[1].request.url.params["forUsername"] == "legacyname"
+    assert "forHandle" not in channels.calls[1].request.url.params
+    assert result.metrics["youtube_subscribers"].value == 1_200_000
+
+
+@respx.mock
 async def test_setlistfm_shows_countries_and_festivals(make_ctx):
     base = "https://api.setlist.fm/rest/1.0/artist/mbid-1/setlists"
     route = respx.get(base).mock(side_effect=[respx.MockResponse(200, json=fixture_json("setlistfm_p1.json")),

@@ -5,11 +5,13 @@ from __future__ import annotations
 import csv
 import io
 import logging
+import math
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -53,6 +55,18 @@ def create_app(service: Service | None = None) -> FastAPI:
     templates = Jinja2Templates(directory=HERE / "templates")
     formatting.register(templates.env)
     jobs: dict[int, str] = {}
+
+    @app.middleware("http")
+    async def block_cross_site_writes(request: Request, call_next):
+        # Browsers always send Origin on cross-site form POSTs; curl and scripts send neither header.
+        if request.method in ("POST", "PUT", "PATCH", "DELETE"):
+            origin = request.headers.get("origin")
+            if origin is None and "referer" in request.headers:
+                origin = request.headers["referer"]
+            # "Origin: null" has no host, so it never matches and is blocked too
+            if origin is not None and urlsplit(origin).netloc != request.headers.get("host"):
+                return PlainTextResponse("Cross-site request blocked", status_code=403)
+        return await call_next(request)
 
     def render(request: Request, name: str, status_code: int = 200, **ctx: Any) -> HTMLResponse:
         return templates.TemplateResponse(request, name, {"version": __version__, **ctx}, status_code=status_code)
@@ -206,6 +220,8 @@ def create_app(service: Service | None = None) -> FastAPI:
             for key, raw in form.items():
                 parts = key.split("__")
                 value = float(str(raw))
+                if not math.isfinite(value):
+                    raise ValueError("weights must be finite numbers")
                 if value < 0:
                     raise ValueError("weights cannot be negative")
                 if parts[0] == "pillar" and parts[1] in weights["pillars"]:
