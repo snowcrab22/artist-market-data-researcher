@@ -81,8 +81,21 @@ The other metric types are scored as follows:
 | **Live demand & track record** | **30** | Ticket-buying fans are what promoters pay for. Festival billing is an outside, money-backed valuation, and show volume and geographic spread show proven touring demand. This pillar is the hardest to fake. |
 | **Audience reach** | **25** | Matches Chartmetric's "Stage" emphasis and is the most-cited industry currency, but it is capped below live because reach alone converts poorly (the "1M listeners, 12 tickets" problem). |
 | **Fan engagement & loyalty** | **20** | Separates committed fans from passive playlist listeners. Conversion benchmarks suggest an engaged fan is worth 3–5× a passive listener, and Chartmetric and Soundcharts both added engagement and fanbase sub-scores. |
-| **Momentum** | **15** | Soundcharts' Trending score, plus Pollstar's finding that ticket sales are most sensitive to social growth. It is lower than reach because growth is noisy and needs history snapshots to compute. |
+| **Momentum** | **15** (± adjustment) | Soundcharts' Trending score, plus Pollstar's finding that ticket sales are most sensitive to social growth. It is applied as an **adjustment** rather than averaged in (see below), because growth is noisy and needs history snapshots to compute. |
 | **Social footprint** | **10** | Raw follower counts are easy to inflate and weakly predictive (Pollstar found *growth*, not size, mattered). They still show addressable marketing reach, and their growth is counted under Momentum. |
+
+**Why momentum is an adjustment, not a level pillar.** Growth scores are centred on
+50, where 50 means flat. Averaging momentum into the other pillars would pull every
+stable artist towards the middle: a flat-growing stadium act would lose about 6
+points to the averaging alone. Soundcharts keeps *Fanbase* (level) and
+*Trending* (change) as separate sub-scores for the same reason. ArtistScore
+therefore averages the four level pillars (live, reach, engagement, social,
+renormalised over 85), then **shifts** the total by
+`(15/100) × (momentum − 50)`. Flat growth changes nothing, and strong growth or
+decline moves the score by at most ±7.5 points. Calibration check with the
+synthetic demo profiles: a 28M-listener festival headliner scores 81, a
+650K-listener touring band 58, and a viral act with 3.2M listeners but six shows
+42.
 
 ### 3.3 Metrics within each pillar
 
@@ -169,15 +182,17 @@ A score of 72 at 35% coverage should be read as "probably strong, but unverified
 
 ### 3.5 Tiers
 
-These are percentile-style labels in the spirit of Soundcharts' career stages:
+These labels follow the spirit of Soundcharts' career stages, where "Superstar"
+is the top 0.03% of artists, roughly the top 4,500. The cut-offs were calibrated
+on reference profiles:
 
-| Score | Tier |
-|---|---|
-| ≥ 85 | Superstar / headliner |
-| 70–85 | Established |
-| 55–70 | Mid-level |
-| 35–55 | Developing |
-| < 35 | Emerging |
+| Score | Tier | Typical profile |
+|---|---|---|
+| ≥ 75 | Superstar / headliner | 10M+ monthly listeners, tier-1 festival headline slots |
+| 60–75 | Established | 1–5M listeners, theatres and arenas, festival mid-card |
+| 45–60 | Mid-level | 200K–1M listeners, club and theatre touring, tier-2 festivals |
+| 30–45 | Developing | 20K–200K listeners, or reach without live history |
+| < 30 | Emerging | early-career acts |
 
 ## 4. Known limitations
 

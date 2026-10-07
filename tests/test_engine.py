@@ -70,9 +70,9 @@ def test_benchmark_metric_uses_follower_count():
     assert big.pillars["engagement"].score > 75
 
 
-@pytest.mark.parametrize("total,tier", [(90, "Superstar / headliner"), (85, "Superstar / headliner"),
-                                        (70, "Established"), (69.9, "Mid-level"), (55, "Mid-level"),
-                                        (35, "Developing"), (10, "Emerging")])
+@pytest.mark.parametrize("total,tier", [(90, "Superstar / headliner"), (75, "Superstar / headliner"),
+                                        (60, "Established"), (59.9, "Mid-level"), (45, "Mid-level"),
+                                        (30, "Developing"), (10, "Emerging")])
 def test_tier_boundaries(total, tier):
     assert tier_for(total) == tier
 
@@ -104,3 +104,31 @@ def test_momentum_normalises_to_30_days_and_picks_closest_reference():
 def test_momentum_skips_zero_baseline():
     history = [{"tiktok_followers": 0.0}, {"tiktok_followers": 500.0}]
     assert derive_momentum(history, [_ts(0), _ts(30)]) == {}
+
+
+def test_flat_momentum_leaves_level_score_unchanged():
+    level = {"spotify_monthly_listeners": 5e6}
+    base = score(level, WEIGHTS).total
+    assert score({**level, "streaming_growth_30d": 0.0}, WEIGHTS).total == pytest.approx(base)
+
+
+def test_momentum_adjusts_by_at_most_half_its_weight():
+    level = {"spotify_monthly_listeners": 5e6}
+    base = score(level, WEIGHTS).total
+    up = score({**level, "streaming_growth_30d": 1.0}, WEIGHTS)
+    down = score({**level, "streaming_growth_30d": -0.9}, WEIGHTS)
+    assert up.total == pytest.approx(base + 7.5)
+    assert down.total == pytest.approx(base - 7.5)
+    metric = up.pillars["momentum"].metrics[0]
+    assert metric.contribution == pytest.approx(7.5)
+
+
+def test_momentum_alone_is_unscored():
+    result = score({"wikipedia_trend": 0.5}, WEIGHTS)
+    assert result.total is None
+    assert result.pillars["momentum"].score is not None
+
+
+def test_adjusted_total_is_clamped():
+    result = score({"spotify_monthly_listeners": 1e9, "streaming_growth_30d": 5.0}, WEIGHTS)
+    assert result.total == 100

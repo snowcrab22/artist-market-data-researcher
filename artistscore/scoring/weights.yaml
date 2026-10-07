@@ -2,6 +2,10 @@
 # Pillar weights are relative (they need not sum to 100). Metric weights are relative within a pillar
 # and are renormalised over the metrics actually available for an artist.
 #
+# mode: adjust (momentum) -> the pillar does not average into the level score; instead it shifts the total by
+#   (weight / sum of all pillar weights) x (pillar score - 50): flat growth changes nothing, and the default
+#   weight of 15 moves the total by at most +/-7.5 points.
+#
 # scale types:
 #   log        -> 0 at lo, 100 at hi, logarithmic
 #   growth     -> 50 flat, 100 at +full (30-day growth rate, or ratio-1 for trends)
@@ -40,6 +44,7 @@ pillars:
   momentum:
     label: Momentum
     weight: 15
+    mode: adjust
     metrics:
       social_growth_30d: {label: "Social follower growth (30d)", weight: 40, scale: growth, full: 0.25}
       streaming_growth_30d: {label: "Streaming audience growth (30d)", weight: 35, scale: growth, full: 0.25}

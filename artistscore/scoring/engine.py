@@ -15,7 +15,7 @@ from artistscore.scoring.normalize import benchmark_score, growth_score, log_sca
 
 DEFAULT_WEIGHTS_PATH = Path(__file__).with_name("weights.yaml")
 
-TIERS = [(85, "Superstar / headliner"), (70, "Established"), (55, "Mid-level"), (35, "Developing"),
+TIERS = [(75, "Superstar / headliner"), (60, "Established"), (45, "Mid-level"), (30, "Developing"),
          (0, "Emerging")]
 
 STREAMING_GROWTH_KEYS = ("spotify_monthly_listeners", "deezer_fans", "lastfm_listeners")
@@ -41,6 +41,7 @@ class PillarScore:
     label: str
     weight: float
     score: float | None
+    mode: str = "level"  # "level" pillars average into the score; "adjust" pillars shift it around 50
     effective_weight: float = 0.0
     metrics: list[MetricScore] = field(default_factory=list)
     missing: list[str] = field(default_factory=list)
@@ -118,22 +119,30 @@ def score(metrics: dict[str, float], weights: dict[str, Any],
                 coverage += (pweight / total_pillar_weight) * (mweight / total_metric_weight)
         available_weight = sum(m.weight for m in scored)
         pillar_score = (sum(m.score * m.weight for m in scored) / available_weight) if available_weight else None
-        pillars[pkey] = PillarScore(pkey, pcfg.get("label", pkey), pweight, pillar_score, metrics=scored,
-                                    missing=missing)
+        pillars[pkey] = PillarScore(pkey, pcfg.get("label", pkey), pweight, pillar_score,
+                                    pcfg.get("mode", "level"), metrics=scored, missing=missing)
 
-    active_weight = sum(p.weight for p in pillars.values() if p.score is not None)
+    def spread(pillar: PillarScore, centre: float) -> None:
+        metric_weight = sum(m.weight for m in pillar.metrics)
+        for m in pillar.metrics:
+            m.effective_weight = pillar.effective_weight * m.weight / metric_weight
+            m.contribution = (m.score - centre) * m.effective_weight
+
+    level = [p for p in pillars.values() if p.mode != "adjust" and p.score is not None and p.weight]
+    level_weight = sum(p.weight for p in level)
     total = None
-    if active_weight:
+    if level_weight:
         total = 0.0
-        for pillar in pillars.values():
-            if pillar.score is None or not pillar.weight:
-                continue
-            pillar.effective_weight = pillar.weight / active_weight
+        for pillar in level:
+            pillar.effective_weight = pillar.weight / level_weight
             total += pillar.score * pillar.effective_weight
-            metric_weight = sum(m.weight for m in pillar.metrics)
-            for m in pillar.metrics:
-                m.effective_weight = pillar.effective_weight * m.weight / metric_weight
-                m.contribution = m.score * m.effective_weight
+            spread(pillar, 0.0)
+        for pillar in pillars.values():
+            if pillar.mode == "adjust" and pillar.score is not None and pillar.weight:
+                pillar.effective_weight = pillar.weight / total_pillar_weight
+                total += (pillar.score - 50) * pillar.effective_weight
+                spread(pillar, 50.0)
+        total = max(0.0, min(100.0, total))
 
     return ScoreResult(total, tier_for(total), coverage, confidence_for(coverage), pillars)
 

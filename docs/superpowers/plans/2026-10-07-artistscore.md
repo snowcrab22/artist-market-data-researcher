@@ -15,7 +15,7 @@
 - Python ≥ 3.11; no JS build step; no external CDN required for the UI to work.
 - Data dir defaults to `./data` (env `ARTISTSCORE_DATA_DIR`); DB file `artistscore.db`.
 - Pillar weights: live 30, reach 25, engagement 20, momentum 15, social 10. Metric weights and anchors exactly as in `metric-weights.md` §3.3.
-- Tier cut-offs: ≥85 Superstar / headliner, ≥70 Established, ≥55 Mid-level, ≥35 Developing, else Emerging. Confidence: high ≥0.70 coverage, medium ≥0.40, else low.
+- Tier cut-offs: ≥75 Superstar / headliner, ≥60 Established, ≥45 Mid-level, ≥30 Developing, else Emerging (recalibrated in Task 6, see ledger). Confidence: high ≥0.70 coverage, medium ≥0.40, else low.
 - No source failure may fail a refresh; every source result carries `status` in {ok, skipped, error}.
 - MusicBrainz requests ≤ 1/s with a descriptive User-Agent; setlist.fm ≤ 2/s.
 
