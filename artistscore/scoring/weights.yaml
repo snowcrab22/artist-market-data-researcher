@@ -1,0 +1,54 @@
+# Default ArtistScore weights. Rationale and sources: docs/research/metric-weights.md
+# Pillar weights are relative (they need not sum to 100). Metric weights are relative within a pillar
+# and are renormalised over the metrics actually available for an artist.
+#
+# scale types:
+#   log        -> 0 at lo, 100 at hi, logarithmic
+#   growth     -> 50 flat, 100 at +full (30-day growth rate, or ratio-1 for trends)
+#   benchmark  -> engagement rate vs expected rate for the account's follower tier
+pillars:
+  live:
+    label: Live demand & track record
+    weight: 30
+    metrics:
+      avg_ticket_sales: {label: "Avg hard-ticket sales (manual)", weight: 40, scale: log, lo: 50, hi: 50000}
+      festival_score: {label: "Festival appearances (tier-weighted)", weight: 35, scale: log, lo: 1, hi: 200}
+      shows_24mo: {label: "Shows, last 24 months", weight: 25, scale: log, lo: 2, hi: 200}
+      bandsintown_trackers: {label: "Bandsintown trackers", weight: 20, scale: log, lo: 500, hi: 10000000}
+      countries_24mo: {label: "Countries played, last 24 months", weight: 10, scale: log, lo: 1, hi: 40}
+      upcoming_shows: {label: "Upcoming shows", weight: 10, scale: log, lo: 1, hi: 100}
+  reach:
+    label: Audience reach
+    weight: 25
+    metrics:
+      spotify_monthly_listeners: {label: "Spotify monthly listeners", weight: 35, scale: log, lo: 1000, hi: 50000000}
+      lastfm_listeners: {label: "Last.fm listeners", weight: 15, scale: log, lo: 1000, hi: 5000000}
+      youtube_subscribers: {label: "YouTube subscribers", weight: 10, scale: log, lo: 1000, hi: 50000000}
+      youtube_views: {label: "YouTube channel views", weight: 10, scale: log, lo: 100000, hi: 20000000000}
+      deezer_fans: {label: "Deezer fans", weight: 10, scale: log, lo: 500, hi: 20000000}
+      wikipedia_monthly_views: {label: "Wikipedia monthly pageviews", weight: 10, scale: log, lo: 500, hi: 2000000}
+      spotify_followers: {label: "Spotify followers", weight: 10, scale: log, lo: 1000, hi: 100000000}
+  engagement:
+    label: Fan engagement & loyalty
+    weight: 20
+    metrics:
+      lastfm_plays_per_listener: {label: "Last.fm plays per listener", weight: 30, scale: log, lo: 3, hi: 80}
+      spotify_follower_ratio: {label: "Spotify followers ÷ monthly listeners", weight: 20, scale: log, lo: 0.05, hi: 2.0}
+      youtube_engagement_rate: {label: "YouTube engagement rate (recent uploads)", weight: 20, scale: log, lo: 0.003, hi: 0.10}
+      instagram_engagement_rate: {label: "Instagram engagement rate vs size benchmark", weight: 15, scale: benchmark, platform: instagram, followers_metric: instagram_followers}
+      tiktok_engagement_rate: {label: "TikTok engagement rate vs size benchmark", weight: 15, scale: benchmark, platform: tiktok, followers_metric: tiktok_followers}
+  momentum:
+    label: Momentum
+    weight: 15
+    metrics:
+      social_growth_30d: {label: "Social follower growth (30d)", weight: 40, scale: growth, full: 0.25}
+      streaming_growth_30d: {label: "Streaming audience growth (30d)", weight: 35, scale: growth, full: 0.25}
+      wikipedia_trend: {label: "Wikipedia attention trend (3 vs prior 9 months)", weight: 25, scale: growth, full: 1.0}
+  social:
+    label: Social footprint
+    weight: 10
+    metrics:
+      instagram_followers: {label: "Instagram followers", weight: 40, scale: log, lo: 1000, hi: 100000000}
+      tiktok_followers: {label: "TikTok followers", weight: 35, scale: log, lo: 1000, hi: 50000000}
+      x_followers: {label: "X / Twitter followers (manual)", weight: 15, scale: log, lo: 1000, hi: 50000000}
+      soundcloud_followers: {label: "SoundCloud followers", weight: 10, scale: log, lo: 200, hi: 5000000}
