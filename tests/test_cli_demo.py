@@ -17,3 +17,18 @@ def test_demo_seed_is_idempotent_and_ranks_sensibly(tmp_path):
     assert service.report(1)["score"].tier == "Superstar / headliner"  # a stadium act lands in the top tier
     # the viral act has reach but little live history: it must not outrank the touring band by much
     assert totals["Demo: Viral Newcomer (synthetic)"] < headliner
+
+
+def test_cli_network_failure_is_a_friendly_message(tmp_path, monkeypatch, capsys):
+    import httpx
+    import pytest
+    import respx
+
+    from artistscore import cli
+
+    monkeypatch.setenv("ARTISTSCORE_DATA_DIR", str(tmp_path))
+    with respx.mock:
+        respx.get("https://musicbrainz.org/ws/2/artist").mock(side_effect=httpx.ConnectError("down"))
+        with pytest.raises(SystemExit) as exc:
+            cli.main(["search", "Radiohead"])
+    assert "artistscore doctor" in str(exc.value)

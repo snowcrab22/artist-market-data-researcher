@@ -11,7 +11,7 @@ import webbrowser
 import httpx
 
 from artistscore import http
-from artistscore.config import KEYS, Settings, data_dir
+from artistscore.config import KEYS, Settings, data_dir, load_dotenv
 from artistscore.storage import Store
 
 DOCTOR_URLS = {
@@ -123,6 +123,7 @@ def cmd_demo(_: argparse.Namespace) -> None:
 
 
 def main(argv: list[str] | None = None) -> None:
+    load_dotenv()
     parser = argparse.ArgumentParser(prog="artistscore", description="Aggregate artist market metrics into a score.")
     sub = parser.add_subparsers(dest="command", required=True)
     serve = sub.add_parser("serve", help="run the local web app")
@@ -143,7 +144,11 @@ def main(argv: list[str] | None = None) -> None:
     demo = sub.add_parser("demo", help="add synthetic demo artists to explore the UI")
     demo.set_defaults(func=cmd_demo)
     args = parser.parse_args(argv)
-    args.func(args)
+    try:
+        args.func(args)
+    except httpx.HTTPError as exc:
+        raise SystemExit(f"Network error: {type(exc).__name__}: {exc}. "
+                         "Run `artistscore doctor` to check which platforms are reachable.") from exc
 
 
 if __name__ == "__main__":

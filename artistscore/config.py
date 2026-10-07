@@ -45,3 +45,16 @@ class Settings:
     def disabled_sources(self) -> set[str]:
         raw = self.get("DISABLED_SOURCES") or ""
         return {s.strip() for s in raw.split(",") if s.strip()}
+
+
+def load_dotenv(path: str | Path = ".env") -> None:
+    """Minimal .env reader: KEY=VALUE lines; existing environment variables win."""
+    path = Path(path)
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = (part.strip() for part in line.split("=", 1))
+        os.environ.setdefault(key, value.strip("'\""))

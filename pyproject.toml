@@ -8,7 +8,6 @@ version = "0.1.0"
 description = "Aggregate music-artist market metrics from streaming, social and live platforms into a researched 0-100 score."
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
 dependencies = [
   "fastapi>=0.110",
   "jinja2>=3.1",
